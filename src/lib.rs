@@ -140,9 +140,9 @@ where
                  vrec : &mut Value<V>) 
     {
         // Get a cursor to the frequency queue referenced by vrec.
-        let mut curs = vec.cursor_mut(vrec.hfreq);
-        let     hpos = curs.node();
-        let     freq = curs.get().unwrap().0;
+        let mut curs   = vec.cursor_mut(vrec.hfreq);
+        let     hqueue = curs.node();
+        let     freq   = curs.get().unwrap().0;
 
         // Remove the key from it's current queue.
         curs.get_mut().unwrap().1.remove(vrec.hpos);
@@ -155,13 +155,13 @@ where
             // If the first queue wasn't for freq + 1, create a new one.
             let mut newq = (freq + 1, LinkedVector::new());
 
-            curs.move_to(hpos);
+            curs.move_to(hqueue);
 
             // Add the key to it and update its handles.
             vrec.hpos  = newq.1.push_back(key);
             vrec.hfreq = curs.insert_after(newq);
         }
-        curs.move_to(hpos);
+        curs.move_to(hqueue);
 
         // If the former queue is empty, remove it.
         if curs.get().unwrap().1.is_empty() {
