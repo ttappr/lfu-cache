@@ -275,6 +275,9 @@ mod tests {
                 },
                 _ => panic!("Bad command!"),
             }
+            // To see output run tests with: 
+            // cargo test -- --test-threads=1 --nocapture
+            println!("cache: {:?}", cache.as_ref().unwrap().frequencies);
         }
     }
 
