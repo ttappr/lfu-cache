@@ -115,12 +115,12 @@ where
 
     /// Removes the Least Frequently Used item from the cache.
     /// 
-    fn remove_lfu(vec : &mut LinkedVector<(usize, LinkedVector<K>)>, 
-                  map : &mut HashMap<K, Value<V>>) 
+    fn remove_lfu(freq_qs : &mut LinkedVector<(usize, LinkedVector<K>)>, 
+                  map     : &mut HashMap<K, Value<V>>) 
     {
-        if let Some(hqueue) = vec.front_node() {
+        if let Some(hqueue) = freq_qs.front_node() {
             // Get the first queue.
-            let queue = vec.get_mut(hqueue).unwrap();
+            let queue = freq_qs.get_mut(hqueue).unwrap();
 
             // Pop the first entry and remove it from the map.
             if let Some(key) = queue.1.pop_front() {
@@ -128,19 +128,19 @@ where
             }
             // If the queue is empty, remove it if it's not the first one.
             if queue.0 != 1 && queue.1.is_empty() {
-                vec.remove(hqueue);
+                freq_qs.remove(hqueue);
             }
         }
     }
 
     /// Increments the frequency of the given key.
     /// 
-    fn incr_freq(vec  : &mut LinkedVector<(usize, LinkedVector<K>)>, 
-                 key  : K, 
-                 vrec : &mut Value<V>) 
+    fn incr_freq(freq_qs : &mut LinkedVector<(usize, LinkedVector<K>)>, 
+                 key     : K, 
+                 vrec    : &mut Value<V>) 
     {
         // Get a cursor to the frequency queue referenced by vrec.
-        let mut curs   = vec.cursor_mut(vrec.hfreq);
+        let mut curs   = freq_qs.cursor_mut(vrec.hfreq);
         let     hqueue = curs.node();
         let     freq   = curs.get().unwrap().0;
 
