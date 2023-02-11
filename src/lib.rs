@@ -120,15 +120,16 @@ where
     {
         if let Some(hqueue) = freq_qs.front_node() {
             // Get the first queue.
-            let queue = freq_qs.get_mut(hqueue).unwrap();
+            if let Some(queue) = freq_qs.get_mut(hqueue) {
 
-            // Pop the first entry and remove it from the map.
-            if let Some(key) = queue.1.pop_front() {
-                map.remove(&key);
-            }
-            // If the queue is empty, remove it if it's not the first one.
-            if queue.0 != 1 && queue.1.is_empty() {
-                freq_qs.remove(hqueue);
+                // Pop the first entry and remove it from the map.
+                if let Some(key) = queue.1.pop_front() {
+                    map.remove(&key);
+                }
+                // If the queue is empty, remove it if it's not the first one.
+                if queue.0 != 1 && queue.1.is_empty() {
+                    freq_qs.remove(hqueue);
+                }
             }
         }
     }
@@ -138,19 +139,20 @@ where
     fn incr_freq(freq_qs : &mut LinkedVector<(usize, LinkedVector<K>)>, 
                  key     : K, 
                  vrec    : &mut Value<V>) 
+        -> Option<HNode>
     {
         // Get a cursor to the frequency queue referenced by vrec.
         let mut curs   = freq_qs.cursor_mut(vrec.hfreq);
         let     hqueue = curs.node();
-        let     freq   = curs.get().unwrap().0;
+        let     freq   = curs.get()?.0;
 
         // Remove the key from it's current queue.
-        curs.get_mut().unwrap().1.remove(vrec.hpos);
+        curs.get_mut()?.1.remove(vrec.hpos);
 
-        if curs.move_next().is_some() && curs.get().unwrap().0 == freq + 1 {
+        if curs.move_next().is_some() && curs.get()?.0 == freq + 1 {
             // If the next queue is the one we want, add the key to it.
             vrec.hfreq = curs.node();
-            vrec.hpos  = curs.get_mut().unwrap().1.push_back(key);
+            vrec.hpos  = curs.get_mut()?.1.push_back(key);
         } else {
             // If the first queue wasn't for freq + 1, create a new one.
             let mut newq = (freq + 1, LinkedVector::new());
@@ -164,9 +166,10 @@ where
         curs.move_to(hqueue);
 
         // If the former queue is empty, remove it.
-        if curs.get().unwrap().1.is_empty() {
+        if curs.get()?.1.is_empty() {
             curs.remove();
         }
+        Some(vrec.hfreq)
     }
 }
 
