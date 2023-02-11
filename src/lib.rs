@@ -89,13 +89,15 @@ where
                     self.frequencies.push_front((1, LinkedVector::new()))
                 }
             };
-            // Create a new value record.
-            let mut vrec = Value::new(value);
+            // Create a new value record and get a mutable reference to the
+            // frequency 1 queue.
+            let mut vrec   = Value::new(value);
+            let     freq_1 = self.frequencies.get_mut(hfreq_1);
             
             // Set the frequency queue locator handles of the value record and 
             // push its key to the frequency 1 queue.
             vrec.hfreq = hfreq_1;
-            vrec.hpos  = self.frequencies[hfreq_1].1.push_back(key.clone());
+            vrec.hpos  = freq_1.1.push_back(key.clone());
 
             // Insert the key-value pair into the map.
             self.map.insert(key, vrec);
