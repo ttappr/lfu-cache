@@ -6,10 +6,10 @@
 /// essentially one linked vector that holds nested linked vectors that each 
 /// correspond to the number of times a key has been accessed.
 /// 
-/// When a new key is added to the queue, and it's already filled to capacity,
+/// When a new key is added to the cache, and it's already filled to capacity,
 /// the least frequently used key is removed. When a key is accessed, it's 
-/// frequency count is incremented, which means it's moved to the next queue
-/// for the next higher frequency count.
+/// frequency count is incremented, which means it's moved to the queue that
+/// corresponds to the next higher frequency count.
 /// 
 /// Both `insert()` and `get()` are O(1) operations.
 /// 
