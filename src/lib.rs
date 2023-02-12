@@ -11,6 +11,11 @@
 /// frequency count is incremented, which means it's moved to the queue that
 /// corresponds to the next higher frequency count.
 /// 
+/// What makes this problem challenging is more than one key can have the same
+/// smallest frequency count, and the key that has been accessed least recently 
+/// is the one that should be removed, hence the need for a queue for each 
+/// frequency.
+/// 
 /// Both `insert()` and `get()` are O(1) operations.
 /// 
 /// `incr_freq()` has an example of how to use a cursor to move to specific
