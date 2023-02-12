@@ -143,12 +143,12 @@ where
         // Get a cursor to the frequency queue referenced by vrec.
         let mut curs   = freq_qs.cursor_mut(vrec.hfreq);
         let     hqueue = curs.node();
-        let     freq   = curs.get().0;
+        let     freq   = curs.0;
 
         // Remove the key from it's current queue (cursor supports DerefMut).
         curs.1.remove(vrec.hpos);
 
-        if curs.move_next().is_some() && curs.get().0 == freq + 1 {
+        if curs.move_next().is_some() && curs.0 == freq + 1 {
             // If the next queue is the one we want, add the key to it.
             vrec.hfreq = curs.node();
             vrec.hpos  = curs.1.push_back(key);
