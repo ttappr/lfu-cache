@@ -6,5 +6,4 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-linked-vector = { git = "https://github.com/ttappr/linked-vector.git", branch = "v1.2.0", features = ["optionless-accessors"] }
-#linked-vector = { path = "../linked-vector", features = ["optionless-accessors"] }
+linked-vector = { version = "1.2", features = ["cursor-remove", "optionless-accessors"] }
