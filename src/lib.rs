@@ -86,23 +86,23 @@ where
             if self.map.len() >= self.capacity {
                 Self::remove_lfu(&mut self.frequencies, &mut self.map);
             }
-            // Get the handle of the queue with frequency 1.
-            let hfreq_1 = {
-                if self.frequencies.front().map_or(false, |q| q.0 == 1) {
-                    self.frequencies.front_node().unwrap()
-                } else {
-                    self.frequencies.push_front((1, LinkedVector::new()))
-                }
-            };
+            if self.frequencies.len() == 0 {
+                self.frequencies.push_back((1, LinkedVector::new()));
+            }
+            let mut curs = self.frequencies.cursor_front_mut().unwrap();
+
+            if curs.0 != 1 {
+                // The first queue is not frequency 1, insert a new queue.
+                curs.insert((1, LinkedVector::new()));
+            }
             // Create a new value record and get a mutable reference to the
             // frequency 1 queue.
-            let mut vrec   = Value::new(value);
-            let     freq_1 = self.frequencies.get_mut(hfreq_1);
+            let mut vrec = Value::new(value);
             
             // Set the frequency queue locator handles of the value record and 
             // push its key to the frequency 1 queue.
-            vrec.hfreq = hfreq_1;
-            vrec.hpos  = freq_1.1.push_back(key.clone());
+            vrec.hfreq = curs.node();
+            vrec.hpos  = curs.1.push_back(key.clone());
 
             // Insert the key-value pair into the map.
             self.map.insert(key, vrec);
@@ -280,9 +280,9 @@ mod tests {
                 },
                 _ => panic!("Bad command!"),
             }
-            // To see output run tests with: 
+            // To see output, uncomment print statement and run tests with: 
             // cargo test -- --test-threads=1 --nocapture
-            println!("cache: {:?}", cache.as_ref().unwrap().frequencies);
+            // println!("cache: {:?}", cache.as_ref().unwrap().frequencies);
         }
     }
 
