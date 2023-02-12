@@ -145,7 +145,7 @@ where
         let     hqueue = curs.node();
         let     freq   = curs.0;
 
-        // Remove the key from it's current queue (cursor supports DerefMut).
+        // Remove the key from it's current queue (cursor implements DerefMut).
         curs.1.remove(vrec.hpos);
 
         if curs.move_next().is_some() && curs.0 == freq + 1 {
