@@ -124,17 +124,14 @@ where
     fn remove_lfu(freq_qs : &mut LinkedVector<(usize, LinkedVector<K>)>, 
                   map     : &mut HashMap<K, Value<V>>) 
     {
-        if let Some(hqueue) = freq_qs.front_node() {
-            // Get the first queue.
-            let queue = freq_qs.get_mut(hqueue);
-
-            // Pop the first entry and remove it from the map.
-            if let Some(key) = queue.1.pop_front() {
+        if let Some(mut curs) = freq_qs.cursor_front_mut() {
+            // Pop item from front of first queue and remove from map.
+            if let Some(key) = curs.1.pop_front() {
                 map.remove(&key);
             }
-            // If the queue is empty, remove it if it's not the first one.
-            if queue.0 != 1 && queue.1.is_empty() {
-                freq_qs.remove(hqueue);
+            // If it's now empty, remove it.
+            if curs.0 != 1 && curs.1.is_empty() {
+                curs.remove();
             }
         }
     }
