@@ -145,13 +145,13 @@ where
         let     hqueue = curs.node();
         let     freq   = curs.get().0;
 
-        // Remove the key from it's current queue.
-        curs.get_mut().1.remove(vrec.hpos);
+        // Remove the key from it's current queue (cursor supports DerefMut).
+        curs.1.remove(vrec.hpos);
 
         if curs.move_next().is_some() && curs.get().0 == freq + 1 {
             // If the next queue is the one we want, add the key to it.
             vrec.hfreq = curs.node();
-            vrec.hpos  = curs.get_mut().1.push_back(key);
+            vrec.hpos  = curs.1.push_back(key);
         } else {
             // If the first queue wasn't for freq + 1, create a new one.
             let mut newq = (freq + 1, LinkedVector::new());
@@ -165,7 +165,7 @@ where
         curs.move_to(hqueue);
 
         // If the former queue is empty, remove it.
-        if curs.get().1.is_empty() {
+        if curs.1.is_empty() {
             curs.remove();
         }
     }
