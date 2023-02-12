@@ -1,6 +1,7 @@
 # Least Frequently Used Cache
 
-This is an example project demonstrating the use of the linked_vector crate. 
+This is an example project demonstrating the use of the 
+[linked-vector](https://crates.io/crates/linked-vector) crate. 
 This was originally a solution to a coding challenge on LeetCode.
 
 A Least Frequently Used cache is implemented using a hash map and a linked 
