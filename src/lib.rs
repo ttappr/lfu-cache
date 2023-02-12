@@ -43,8 +43,8 @@ impl<V> Value<V> {
     fn new(value: V) -> Self {
         Self {
             value,
-            hfreq : HNode::default(),
-            hpos  : HNode::default(),
+            hfreq : HNode::default(), // Which frequency queue.
+            hpos  : HNode::default(), // Position in the frequency queue.
         }
     }
 }
@@ -80,7 +80,7 @@ where
         if let Some(vrec) = self.map.get_mut(&key) {
             // The key already exists, update value and increment its frequency.
             vrec.value = value;
-            Self::incr_freq(&mut self.frequencies, key, vrec);
+            Self::incr_freq(&mut self.frequencies, vrec);
         } else {
             // This is a new key. Remove the LFU item if the cache is full.
             if self.map.len() >= self.capacity {
@@ -114,7 +114,7 @@ where
     pub fn get(&mut self, key: &K) -> Option<&V> {
         self.map.get_mut(key).map(|vrec| {
             // Move it to the next frequency queue.
-            Self::incr_freq(&mut self.frequencies, key.clone(), vrec);
+            Self::incr_freq(&mut self.frequencies, vrec);
             &vrec.value
         })
     }
@@ -142,7 +142,6 @@ where
     /// Increments the frequency of the given key.
     /// 
     fn incr_freq(freq_qs : &mut LinkedVector<(usize, LinkedVector<K>)>, 
-                 key     : K, 
                  vrec    : &mut Value<V>) 
     {
         // Get a cursor to the frequency queue referenced by vrec.
@@ -151,7 +150,7 @@ where
         let     freq   = curs.0;
 
         // Remove the key from it's current queue (cursor implements DerefMut).
-        curs.1.remove(vrec.hpos);
+        let key = curs.1.remove(vrec.hpos);
 
         if curs.move_next().is_some() && curs.0 == freq + 1 {
             // If the next queue is the one we want, add the key to it.
@@ -163,7 +162,7 @@ where
 
             curs.move_to(hqueue);
 
-            // Add the key to it and update its handles.
+            // Add the key to it and update the Value record's handles.
             vrec.hpos  = newq.1.push_back(key);
             vrec.hfreq = curs.insert_after(newq);
         }
